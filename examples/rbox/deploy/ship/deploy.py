@@ -26,7 +26,7 @@ NMS = librbox.NMS_ship
 NMS.argtypes=(POINTER(c_double),POINTER(c_int),POINTER(c_double),POINTER(c_int),c_double)
 NMS.restype=None
 
-caffe.set_device(1)
+caffe.set_device(0)
 caffe.set_mode_gpu()
 caffemodel = 'RBOX_SHIPOPT_RBOX_300x300_SHIPOPT_VGG_new_iter_300000.caffemodel'
 deploy = 'deploy.prototxt'
@@ -48,18 +48,18 @@ nms_threshold = 0.2
 prior_var = [0.1, 0.1, 0.2, 0.2, 0.1]
 label = 1
 
-net.forward()
-prior_boxes = net.blobs['mbox_priorbox_plane'].data[...]
-prior_boxes = prior_boxes[0][0]
-prior_boxes = prior_boxes.reshape(len(prior_boxes)/5,5)
-inputfile = open('prior_boxes.pkl','wb')
-pickle.dump(prior_boxes, inputfile)
-inputfile.close()
+#net.forward()
+#prior_boxes = net.blobs['mbox_priorbox_plane'].data[...]
+#prior_boxes = prior_boxes[0][0]
+#prior_boxes = prior_boxes.reshape(len(prior_boxes)/5,5)
+#inputfile = open('prior_boxes.pkl','wb')
+#pickle.dump(prior_boxes, inputfile)
+#inputfile.close()
 ########### Comment the above five lines and uncomment the following ############
 ########### 3 lines to deploy the network into any caffe environment #############
-#inputfile = open('prior_boxes.pkl','rb')
-#prior_boxes = pickle.load(inputfile)
-#inputfile.close()
+inputfile = open('prior_boxes.pkl','rb')
+prior_boxes = pickle.load(inputfile, encoding='latin1')
+inputfile.close()
 
 
 print('Start detection')
@@ -126,7 +126,7 @@ for i in range(len(resolutionOut)):
         conf_preds_j = conf_preds_j[index]
         #print('Number of positives: {}'.format(len(index)))
         
-        loc_preds_j = loc_preds[j].reshape(len(loc_preds[j])/5, 5)      ###############Loc preds output 5 number##################
+        loc_preds_j = loc_preds[j].reshape(len(loc_preds[j])//5, 5)      ###############Loc preds output 5 number##################
         loc_preds_j = loc_preds_j[index]
         loc_preds_j = loc_preds_j.reshape(loc_preds_j.shape[0] * 5)
         
